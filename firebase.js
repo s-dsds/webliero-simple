@@ -46,7 +46,7 @@ function initFirebase() {
         loginsRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/logins`);
 
         adminsRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/admins`);
-
+        listenForAdminsEvents();
 		console.log('firebase ok');
 
 	})();		
