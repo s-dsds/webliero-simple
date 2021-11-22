@@ -56,6 +56,7 @@ function initFirebase() {
         listenForSettingsEvents();
 
         if (CONFIG.pool_from_database) {
+            console.log("loading pool");
             poolRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/pool`);
             listenForPoolEvents();
         }
