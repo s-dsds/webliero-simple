@@ -127,6 +127,7 @@ function updateSettings(snapshot) {
     } 
     window.WLROOM.setSettings(sett);
     window.settingsSnap = sett;
+    console.log("settings loaded", JSON.stringify(sett));
 }
 
 COMMAND_REGISTRY.add("reset", ["!reset: resets to last settings loaded from database"], (player) => {
