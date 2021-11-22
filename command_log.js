@@ -3,8 +3,8 @@ window.WLROOM.onPlayerChat = function (p, m) {
 	writeLog(p,m);
 }
 
-window.WLROOM.onGameEnd2 = function() {
-    if (CONFIG.pool_from_database) {
+if (CONFIG.pool_from_database) {
+    window.WLROOM.onGameEnd2 = function() {
         next();
     }
 }
