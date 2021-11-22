@@ -10,7 +10,7 @@ var commands;
 	console.log("Running Server...");
 	var room = WLInit({
 		token: window.WLTOKEN,
-		roomName: "Small Pro Mode Room [24/7]",
+		roomName: CONFIG.room_name,
 		maxPlayers: 4,	
 		public: CONFIG.public
 	});

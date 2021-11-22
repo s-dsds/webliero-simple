@@ -8,4 +8,7 @@ const CONFIG = {
         }, 
     public: false,
     room_id: "one",
+    room_name: "Small Pro Mode Room [24/7]",
+    motd: "Welcome to the small Pro mode room",
+    pool_from_database: false
 };

@@ -7,7 +7,7 @@ window.WLROOM.onPlayerJoin = (player) => {
 	auth.set(player.id, player.auth);
 	writeLogins(player);
 
-	announce("Welcome to Pro mode all weapons", player, 0xFF2222, "bold");
+	announce(CONFIG.motd, player, 0xFF2222, "bold");
 	
 	announce("please join us on discord if you're not there yet! "+CONFIG.discord_invite, player, 0xDD00DD, "italic");
 	if (player.auth){		
