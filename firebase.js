@@ -125,7 +125,6 @@ function updateSettings(snapshot) {
     for(let s in v) {
         sett[s] = v[s];
     } 
-    sett.teamsLocked = isFull();
     window.WLROOM.setSettings(sett);
     window.settingsSnap = sett;
 }

@@ -25,7 +25,7 @@ async function getMapData(mapUrl) {
       return obj;
     }
     try {
-        obj = await (await fetch(baseURL + '/' + mapUrl)).arrayBuffer();
+        obj = await (await fetch(mapUrl)).arrayBuffer();
     }catch(e) {
         return null;
     }
