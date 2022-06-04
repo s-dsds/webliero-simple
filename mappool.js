@@ -3,6 +3,8 @@ var baseURL = "https://webliero.gitlab.io/webliero-maps";
 var mypool = {};
 var mypoolIdx = [];
 
+var otherPools = new Map();
+
 var currentMap = 0;
 var currentMapName = "";
 
@@ -58,14 +60,49 @@ function loadMap(name, data) {
 }
 
 function resolveNextMap() {
-    currentMap=currentMap+1<mypoolIdx.length?currentMap+1:0;
+    currentMap=currentMap+1<mypoolIdx.length?currentMap+1:0;    
     currentMapName = mypool[mypoolIdx[currentMap]];
+    if (currentMapName.substring(0,15)=="random#https://") {
+        resolveNextSubPoolMap()
+    } else {
+        loadMapByName(currentMapName);
+    }
+}
+
+function resolveNextSubPoolMap() {
+    let poolname = currentMapName.replace("random#","");
+    if (typeof otherPools[poolname] =="undefined") {
+        loadSubPool(poolname, applyNextSubPoolMap)
+    } else {
+        applyNextSubPoolMap(pool)
+    }   
+}
+
+function applyNextSubPoolMap(pool) {
+    pool.currentMap = pool.currentMap+1<pool.idx.length?pool.currentMap+1:0;    
+    currentMapName = pool.baseUrl+'/'+pool.maps[pool.idx[pool.currentMap]];
+    loadMapByName(currentMapName);
+
+}
+
+function loadSubPool(poolURL, callback) {
+    (async () => {
+        let pool = await (await fetch(poolURL)).json();
+        otherPools[poolURL] = {
+            currentMap: 0,
+            idx:Object.keys(pool),
+            baseURL: pool.baseURL?? poolURL.substring(0, poolURL.lastIndexOf("/"))
+        };
+        shuffleArray(pool);
+        otherPools[poolURL].maps= pool;
+        callback(poolURL);
+    })();
 }
 
 function next() {
     resolveNextMap();
 
-    loadMapByName(currentMapName);
+    
 }
 
 function shufflePool() {
