@@ -81,11 +81,37 @@ function loadnewAdmin(childSnapshot) {
   notifyAdmins("admin `"+k+"`: `"+v.name+"` has been added to memory");
 }
 
+
 function loadAdmin(id, json) {
     admins.set(id, {
         auth: id,
         name: json.name,
+        super: typeof json.super != 'undefined' && json.super
     } );
+}
+
+function isSuperAdmin(player) {
+    let a = auth.get(player.id)
+    let p = admins.get(a)
+    return p && p.super
+}
+
+function addAdmin(player) {
+    let a = auth.get(player.id)
+    adminsRef.child(a).set({name: player.name})
+}
+
+function removeAdmin(a) {    
+    let p = admins.get(a)
+    let curr_pid = getPlayerIdFromAuth(a)
+    if (curr_pid) {
+        window.WLROOM.setPlayerAdmin(curr_pid, false)
+    }
+    
+    const name = p.name
+    adminsRef.child(a).remove()
+    admins.delete(a)
+    return name
 }
 
 /** mappool */
@@ -123,18 +149,27 @@ function listenForSettingsEvents() {
 function updateSettings(snapshot) {
     let v = snapshot.val();
     let sett = window.WLROOM.getSettings();
-    for(let s in v) {
-        sett[s] = v[s];
+    for(let s in v) {        
+        sett[s] = v[s];     
     } 
     window.WLROOM.setSettings(sett);
     window.settingsSnap = sett;
     console.log("settings loaded", JSON.stringify(sett));
 }
 
+function loadSettings(sett) {
+    window.WLROOM.setSettings(sett);
+    if (typeof sett.afkLimit != 'undefined') {
+        AFK_HANDLER.setTimeoutSeconds(sett.afkLimit);
+    } else  {
+        AFK_HANDLER.disable();
+    }
+}
+
 COMMAND_REGISTRY.add("reset", ["!reset: resets to last settings loaded from database"], (player) => {
-    window.WLROOM.setSettings(window.settingsSnap);
+    loadSettings(window.settingsSnap);
     return false;
-}, true);
+},  COMMAND.ADMIN_ONLY);
 
 
 COMMAND_REGISTRY.add("poolreload", ["!poolreload: reloads the map pool from database from database"], (player) => {
@@ -143,7 +178,7 @@ COMMAND_REGISTRY.add("poolreload", ["!poolreload: reloads the map pool from data
     mypoolIdx = [];
     listenForPoolEvents();
     return false;
-}, true);
+}, COMMAND.ADMIN_ONLY);
 
 function writeLogins(p, type ="login") {
     const now = Date.now();

@@ -22,7 +22,7 @@ var AFK_HANDLER = (function () {
   let room = null
   
   let settings = {
-    motd: `motd`,
+    motd: null,
     motd_color: 0x00A9D0,
     spectatorTeam: 0,
     timeout: 20000,
@@ -38,7 +38,12 @@ var AFK_HANDLER = (function () {
       ...settings,
       ...confArgs
     }
-    settings.motd = `Anti-AFK plugin is enabled, you'll be moved to spectating if you stay more that ${settings.timeout / 1000} seconds inactive in the game except if you're alone`;
+    if (settings.enabled) {
+        settings.motd = `Anti-AFK plugin is enabled, you'll be moved to spectating if you stay more that ${settings.timeout / 1000} seconds inactive in the game except if you're alone`;
+    } else {
+        settings.motd = null
+    }
+    
   }
   const execMotd = (player) => {
     if (!settings.motd) {
@@ -134,12 +139,37 @@ var AFK_HANDLER = (function () {
     initPlayerTimeout(player)
   }
 
-  const resetPlayersTimeout = () => {
+  const resetAllPlayersTimeouts = () => {
      for (let player of window.WLROOM.getPlayerList()) {
-        resetPlayerTimeout(player.id)
+        if (player.team != settings.spectatorTeam) {
+            resetPlayerTimeout(player.id)
+        }        
      }
   }
-  
+  const disable = () => {    
+    loadSettings({    
+        timeout: 0,    
+        graceTime: 0,        
+        enabled: false,
+    });
+    if (typeof annouce =='function') announce(`afk detection was disabled`)   
+  }
+  const setTimeoutSeconds = (n) => {
+    if (n==0) {
+        disable();
+        return;
+    }
+    let g = Math.round(n/4);
+    loadSettings({
+        timeout: n*1000,
+        graceTime: g*1000,
+        enabled: true,
+    });
+    if (typeof annouce =='function') announce(`afk detection was changed to ${n}seconds with ${g}seconds grace time`)
+  }
+  const getSettings = () => {
+     return settings
+  }
   const init = (argRoom, confArgs) => {        
     if (window.AFKLUGIN) {
       log('afk plugin is already loaded, you can change settings use AFK_HANDLER.loadSettings()', settings)
@@ -155,7 +185,7 @@ var AFK_HANDLER = (function () {
     chainFunction(room, 'onPlayerJoin', execMotd) 
     chainFunction(room, 'onPlayerJoin', purgeInactiveSpectators)
     chainFunction(room, 'onPlayerTeamChange', handleTeamChange)  
-    chainFunction(room, 'onGameStart', resetPlayerTimeouts) 
+    chainFunction(room, 'onGameStart', resetAllPlayersTimeouts) 
 
     chainFunction(room, 'onPlayerActivity', activate)
     chainFunction(room, 'onPlayerChat', activate)
@@ -166,4 +196,7 @@ var AFK_HANDLER = (function () {
   return {
     init: init,
     loadSettings: loadSettings,
+    setTimeoutSeconds: setTimeoutSeconds,
+    disable: disable,
+    getSettings: getSettings
   }})()

@@ -133,7 +133,7 @@ COMMAND_REGISTRY.add("map", ["!map #mapname#: load lev map from gitlab webliero.
     currentMapName = n;
     loadMapOrSubPool();
     return false;
-}, true);
+}, COMMAND.ADMIN_ONLY);
 
 function moveToGame(player) {
     window.WLROOM.setPlayerTeam(player.id, 1);
@@ -151,12 +151,12 @@ COMMAND_REGISTRY.add("mapi", ["!mapi #index#: load map by pool index"], (player,
     currentMapName = mypool[idx];
     loadMapOrSubPool();
     return false;
-}, true);
+}, COMMAND.ADMIN_ONLY);
 
 COMMAND_REGISTRY.add("clearcache", ["!clearcache: clears local map cache"], (player) => {
     mapCache = new Map();
     return false;
-}, true);
+}, COMMAND.ADMIN_ONLY);
 
 COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"], (player) => {
     let a = auth.get(player.id);
@@ -164,13 +164,57 @@ COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"
 		window.WLROOM.setPlayerAdmin(player.id, true);
 	}
     return false;
-}, false);
+}, COMMAND.FOR_ALL);
 
+COMMAND_REGISTRY.add(["addadmin","aa"], ["!addadmin #id: adds an admin"], (player, pid ="")=> {
+    pid = pid.replace("#","")
+    let p = window.WLROOM.getPlayer(parseInt(pid))
+    if (!p) {
+        announce(`player id ${pid} not found`)
+        return false
+    }
+    addAdmin(p)
+    window.WLROOM.setPlayerAdmin(parseInt(pid), true)
+    announce(`player ${p.name} as been added to the perm admin list`, null, COLORS.ANNOUNCE_BRIGHT)
+    return false;
+},  COMMAND.SUPER_ADMIN_ONLY);
+
+
+COMMAND_REGISTRY.add(["listadmins","la"], ["!listadmins: list all admins"], (player)=> {
+    for (const a of admins.values()) {
+        announce(`${a.name} ${a.auth} ${a.super?'(super admin)':''}`, player.id, COLORS.ANNOUNCE_BRIGHT)
+    }
+    return false;
+},  COMMAND.SUPER_ADMIN_ONLY);
+
+COMMAND_REGISTRY.add(["deladmin","da"], ["!deladmin #auth: removes an admin"], (player, a="")=> {
+    if (!isNaN(a.replace("#",""))) {
+        let pid = parseInt(a.replace("#",""))
+        let p = window.WLROOM.getPlayer(pid)
+        if (p) {
+            a = auth.get(p.id)        
+        }
+    }
+    if (!admins.get(a)) {
+        announce(`${a} is not perm admin`)
+        return false
+    }
+  
+    try {
+        const name = removeAdmin(a)
+        announce(`${name} as been removed from the perm admin list`, null, COLORS.ANNOUNCE_BRIGHT)
+    } catch(error) {
+        announce(`error removing ${a} from admin list`, player, COLORS.ERROR)
+        console.log(`------- error removing admin ${a} : ${error}`)
+    }    
+    
+    return false;
+},  COMMAND.SUPER_ADMIN_ONLY);
 
 COMMAND_REGISTRY.add(["quit","q"], ["!quit or !q: spectate if in game"], (player)=> {
     moveToSpec(player);
     return false;
-}, false);
+}, COMMAND.FOR_ALL);
 
 
 COMMAND_REGISTRY.add(["join","j"], ["!join or !j: joins the game if spectating"], (player)=> {
@@ -178,10 +222,10 @@ COMMAND_REGISTRY.add(["join","j"], ["!join or !j: joins the game if spectating"]
         moveToGame(player);
     }
     return false;
-}, false);
+}, COMMAND.FOR_ALL);
 
 COMMAND_REGISTRY.add(["joinquit","jq", "quitjoin", "qj"], ["!joinquit or jq or quitjoin or qj: move out and back in the game"], (player)=> {
     moveToSpec(player)
     moveToGame(player)
     return false;
-}, false);
+}, COMMAND.FOR_ALL);
