@@ -13,3 +13,7 @@ function hasActivePlayers() {
 function getActivePlayers() {
 	return window.WLROOM.getPlayerList().filter(p => p.team !=0);
 }
+
+function hasOnlyOneActivePlayer() {
+    return getActivePlayers().length==1
+}
