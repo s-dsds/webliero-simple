@@ -62,25 +62,33 @@ function loadMap(name, data) {
 function resolveNextMap() {
     currentMap=currentMap+1<mypoolIdx.length?currentMap+1:0;    
     currentMapName = mypool[mypoolIdx[currentMap]];
-    if (currentMapName.substring(0,15)=="random#https://") {
-        resolveNextSubPoolMap()
+    loadMapOrSubPool()
+
+}
+
+function loadMapOrSubPool(mapName) {
+    let mn = mapName ?? currentMapName
+    if (mn.substring(0,15)=="random#https://") {
+        resolveNextSubPoolMap(mn)
     } else {
-        loadMapByName(currentMapName);
+        loadMapByName(mn);
     }
 }
 
-function resolveNextSubPoolMap() {
-    let poolname = currentMapName.replace("random#","");
+function resolveNextSubPoolMap(mapName) {
+    let mn = mapName ?? currentMapName
+    let poolname = mn.replace("random#","");
     if (typeof otherPools[poolname] =="undefined") {
         loadSubPool(poolname, applyNextSubPoolMap)
     } else {
-        applyNextSubPoolMap(pool)
+        applyNextSubPoolMap(poolname)
     }   
 }
 
-function applyNextSubPoolMap(pool) {
+function applyNextSubPoolMap(poolname) {
+    let pool = otherPools[poolname]
     pool.currentMap = pool.currentMap+1<pool.idx.length?pool.currentMap+1:0;    
-    currentMapName = pool.baseUrl+'/'+pool.maps[pool.idx[pool.currentMap]];
+    currentMapName = pool.baseURL+'/'+pool.maps[pool.idx[pool.currentMap]];
     loadMapByName(currentMapName);
 
 }
@@ -123,7 +131,7 @@ COMMAND_REGISTRY.add("map", ["!map #mapname#: load lev map from gitlab webliero.
         announce("map name is empty ",player, 0xFFF0000);
     }
     currentMapName = n;
-    loadMapByName(currentMapName);
+    loadMapOrSubPool();
     return false;
 }, true);
 
@@ -133,7 +141,7 @@ COMMAND_REGISTRY.add("mapi", ["!mapi #index#: load map by pool index"], (player,
         return false;
     }
     currentMapName = mypool[idx];
-    loadMapByName(currentMapName);
+    loadMapOrSubPool();
     return false;
 }, true);
 
@@ -149,3 +157,12 @@ COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"
 	}
     return false;
 }, false);
+
+
+COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"], (player) => {
+    let a = auth.get(player.id);
+    if (admins.has(a) ) {
+		window.WLROOM.setPlayerAdmin(player.id, true);
+	}
+    return false;
+}, true);
