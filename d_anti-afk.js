@@ -152,7 +152,7 @@ var AFK_HANDLER = (function () {
         graceTime: 0,        
         enabled: false,
     });
-    if (typeof annouce =='function') announce(`afk detection was disabled`)   
+    if (typeof announce =='function') announce(`afk detection was disabled`)   
   }
   const setTimeoutSeconds = (n) => {
     if (n==0) {
@@ -165,7 +165,7 @@ var AFK_HANDLER = (function () {
         graceTime: g*1000,
         enabled: true,
     });
-    if (typeof annouce =='function') announce(`afk detection was changed to ${n}seconds with ${g}seconds grace time`)
+    if (typeof announce =='function') announce(`afk detection was changed to ${n}seconds with ${g}seconds grace time`)
   }
   const getSettings = () => {
      return settings

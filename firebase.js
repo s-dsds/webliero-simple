@@ -152,7 +152,7 @@ function updateSettings(snapshot) {
     for(let s in v) {        
         sett[s] = v[s];     
     } 
-    window.WLROOM.setSettings(sett);
+    loadSettings(sett);
     window.settingsSnap = sett;
     console.log("settings loaded", JSON.stringify(sett));
 }
