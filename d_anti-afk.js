@@ -50,8 +50,8 @@ var AFK_HANDLER = (function () {
   const hotPlayers = {}
   const kickCandidates = {}
   const evictPlayer = (playerId) => {
-    console.log('evicPlayer', !settings.enabled, !isFull(),  (!settings.enabled || !isFull()))
-    if (!settings.enabled || !isFull()) {
+    console.log('evicPlayer', !settings.enabled)
+    if (!settings.enabled) {
       return;
     }
     const message = `You will be moved to spectators due too inactivity in ${settings.graceTime / 1000} seconds, please move`
