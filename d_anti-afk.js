@@ -51,8 +51,12 @@ var AFK_HANDLER = (function () {
   const kickCandidates = {}
   const evictPlayer = (playerId) => {
     console.log('evicPlayer', !settings.enabled)
-    if (!settings.enabled || hasOnlyOneActivePlayer()) {
+    if (!settings.enabled) {
       return;
+    }
+    if (hasOnlyOneActivePlayer()) {
+        resetPlayerTimeout(playerId)
+        return;
     }
     const message = `You will be moved to spectators due too inactivity in ${settings.graceTime / 1000} seconds, please move`
     room.sendAnnouncement(message, playerId, 0xFFFF00, "bold", 2)
@@ -129,8 +133,12 @@ var AFK_HANDLER = (function () {
   const handleTeamChange = (player) => {
     initPlayerTimeout(player)
   }
-  
-  
+
+  const resetPlayersTimeout = () => {
+     for (let player of window.WLROOM.getPlayerList()) {
+        resetPlayerTimeout(player.id)
+     }
+  }
   
   const init = (argRoom, confArgs) => {        
     if (window.AFKLUGIN) {
@@ -146,8 +154,9 @@ var AFK_HANDLER = (function () {
     
     chainFunction(room, 'onPlayerJoin', execMotd) 
     chainFunction(room, 'onPlayerJoin', purgeInactiveSpectators)
-    chainFunction(room, 'onPlayerTeamChange', handleTeamChange)
-    
+    chainFunction(room, 'onPlayerTeamChange', handleTeamChange)  
+    chainFunction(room, 'onGameStart', resetPlayerTimeouts) 
+
     chainFunction(room, 'onPlayerActivity', activate)
     chainFunction(room, 'onPlayerChat', activate)
     

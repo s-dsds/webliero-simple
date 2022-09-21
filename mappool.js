@@ -135,9 +135,17 @@ COMMAND_REGISTRY.add("map", ["!map #mapname#: load lev map from gitlab webliero.
     return false;
 }, true);
 
+function moveToGame(player) {
+    window.WLROOM.setPlayerTeam(player.id, 1);
+}
+
+function moveToSpec(player) {
+    window.WLROOM.setPlayerTeam(player.id, 0);
+}
+
 COMMAND_REGISTRY.add("mapi", ["!mapi #index#: load map by pool index"], (player, idx) => {
-    if (typeof idx=="undefined" || idx=="" || isNaN(idx) || idx>=mypool.length) {
-        announce("wrong index, choose any index from 0 to "+(mypool.length-1),player, 0xFFF0000);
+    if (typeof idx=="undefined" || idx=="" || isNaN(idx) || idx>=mypoolIdx.length) {
+        announce("wrong index, choose any index from 0 to "+(mypoolIdx.length-1),player, 0xFFF0000);
         return false;
     }
     currentMapName = mypool[idx];
@@ -159,10 +167,21 @@ COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"
 }, false);
 
 
-COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"], (player) => {
-    let a = auth.get(player.id);
-    if (admins.has(a) ) {
-		window.WLROOM.setPlayerAdmin(player.id, true);
-	}
+COMMAND_REGISTRY.add(["quit","q"], ["!quit or !q: spectate if in game"], (player)=> {
+    moveToSpec(player);
     return false;
-}, true);
+}, false);
+
+
+COMMAND_REGISTRY.add(["join","j"], ["!join or !j: joins the game if spectating"], (player)=> {
+    if (!window.WLROOM.getSettings().teamsLocked || player.admin) {
+        moveToGame(player);
+    }
+    return false;
+}, false);
+
+COMMAND_REGISTRY.add(["joinquit","jq", "quitjoin", "qj"], ["!joinquit or jq or quitjoin or qj: move out and back in the game"], (player)=> {
+    moveToSpec(player)
+    moveToGame(player)
+    return false;
+}, false);

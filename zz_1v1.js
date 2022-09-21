@@ -1,6 +1,6 @@
 initFirebase();
 
-window.WLROOM.onPlayerJoin = (player) => {
+chainFunction(window.WLROOM, 'onPlayerJoin', (player) => {
 	if (admins.has(player.auth) ) {
 		window.WLROOM.setPlayerAdmin(player.id, true);
 	}
@@ -14,12 +14,14 @@ window.WLROOM.onPlayerJoin = (player) => {
 		auth.set(player.id, player.auth);
 	}
 }
+)
 
-window.WLROOM.onPlayerLeave = function(player) {  
+chainFunction(window.WLROOM, 'onPlayerLeave', function(player) {  
 	writeLogins(player, "logout");
 
 	auth.delete(player.id);
 }
+)
 
 function announce(msg, player, color, style) {
 	window.WLROOM.sendAnnouncement(msg, typeof player =='undefined' || player == null?null:player.id, color!=null?color:0xb2f1d3, style !=null?style:"", 1);

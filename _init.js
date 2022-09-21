@@ -6,6 +6,21 @@ var notifsRef;
 
 var commands;
 
+const chainFunction = (object, attribute, func) => {
+    const original = object[attribute]
+    if (original) {
+      object[attribute] = (...arguments) => {
+        let or = original.apply(object, arguments)
+        let r = func.apply(object, arguments)
+        if (false==r || false==or) {
+          return false;
+        }
+      }
+    } else {
+      object[attribute] = func
+    }
+}
+
 (async function () {
 	console.log("Running Server...");
 	var room = WLInit({
