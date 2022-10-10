@@ -141,6 +141,15 @@ function removeMap(childSnapshot) {
     notifyAdmins("map `"+n+"` has been remove from the pool");
 }
 
+
+function addMap(mapname) {
+    poolRef.child(mypoolIdx.length).set(mapname)
+}
+
+function delMapLast() {        
+    poolRef.child(mypoolIdx.length-1).remove()
+}
+
 /** settings */
 function listenForSettingsEvents() {
     settingsRef.on('value', updateSettings);

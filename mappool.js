@@ -166,6 +166,40 @@ COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"
     return false;
 }, COMMAND.FOR_ALL);
 
+COMMAND_REGISTRY.add("addmap", ["!addmap #name: adds a map to the current pool"], (player, mapname ="")=> {   
+    if (mapname=="") {
+        announce(`map name is empty, should be either on "https://webliero.gitlab.io/webliero-maps/pools/index.json" or a correct https link`, player.id, COLORS.ERROR)
+        return false
+    }
+    if (mapname.indexOf(baseURL)==0) {
+        mapname=mapname.substring(baseURL.length+1)
+    }
+    (async () => {
+        if (null == getMapData(getMapUrl(mapname))) {
+            announce(`map ${mapname} could not be loaded`, player.id, COLORS.ERROR)
+            return;
+        }
+        addMap(mapname)
+        announce(`map ${mapname} was added to the pool`, null, COLORS.ANNOUNCE_BRIGHT)
+        
+    })();
+    return false;
+},  COMMAND.SUPER_ADMIN_ONLY);
+
+COMMAND_REGISTRY.add("delmaplast", ["!delmap: removes last map from the current pool"], (player, idx =null)=> {   
+    if (mypoolIdx.length==0) {
+        return false
+    }
+    /* if (null==idx) {
+        announce(`you need to provide an index btw 0 and ${mypoolIdx.length-1}`, player.id, COLORS.ERROR)
+        return false
+    }*/
+    delMapLast()
+   // announce(`map ${idx} was removed from the pool`, null, COLORS.ANNOUNCE_BRIGHT)   
+    
+    return false;
+},  COMMAND.SUPER_ADMIN_ONLY);
+
 COMMAND_REGISTRY.add(["addadmin","aa"], ["!addadmin #id: adds an admin"], (player, pid ="")=> {
     pid = pid.replace("#","")
     let p = window.WLROOM.getPlayer(parseInt(pid))
@@ -199,7 +233,10 @@ COMMAND_REGISTRY.add(["deladmin","da"], ["!deladmin #auth: removes an admin"], (
         announce(`${a} is not perm admin`)
         return false
     }
-  
+    if (isSuperAdmin(admins.get(a))) {
+        announce(`${a} cannot delete a super admin`)
+        return false
+    }
     try {
         const name = removeAdmin(a)
         announce(`${name} as been removed from the perm admin list`, null, COLORS.ANNOUNCE_BRIGHT)
