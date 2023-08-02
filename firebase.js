@@ -182,10 +182,15 @@ COMMAND_REGISTRY.add("reset", ["!reset: resets to last settings loaded from data
 
 
 COMMAND_REGISTRY.add("poolreload", ["!poolreload: reloads the map pool from database from database"], (player) => {
-    poolRef = fdb.ref(`${CONFIG.room_id}/pool`);    
+    poolRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/pool`);    
     mypool = {};
     mypoolIdx = [];
     listenForPoolEvents();
+    return false;
+}, COMMAND.ADMIN_ONLY);
+
+COMMAND_REGISTRY.add("poolshuffle", ["!poolshuffle: shuffles map pool"], (player) => {
+    shufflePool();
     return false;
 }, COMMAND.ADMIN_ONLY);
 
