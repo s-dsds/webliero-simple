@@ -32,7 +32,7 @@ async function getMapData(mapUrl) {
         return null;
     }
 
-    
+
     mapCache.set(mapUrl, obj)
     return obj;
 }
@@ -44,7 +44,7 @@ function loadMapByName(name) {
         if (data == null) {
             notifyAdmins(`map ${name} could not be loaded`)
             window.WLROOM.restartGame();
-        } else if (name.split('.').pop()=="png") {    
+        } else if (name.split('.').pop()=="png") {
             window.WLROOM.loadPNGLevel(name, data);
         } else {
             window.WLROOM.loadLev(name, data);
@@ -60,7 +60,7 @@ function loadMap(name, data) {
 }
 
 function resolveNextMap() {
-    currentMap=currentMap+1<mypoolIdx.length?currentMap+1:0;    
+    currentMap=currentMap+1<mypoolIdx.length?currentMap+1:0;
     currentMapName = mypool[mypoolIdx[currentMap]];
     loadMapOrSubPool()
 
@@ -82,12 +82,12 @@ function resolveNextSubPoolMap(mapName) {
         loadSubPool(poolname, applyNextSubPoolMap)
     } else {
         applyNextSubPoolMap(poolname)
-    }   
+    }
 }
 
 function applyNextSubPoolMap(poolname) {
     let pool = otherPools[poolname]
-    pool.currentMap = pool.currentMap+1<pool.idx.length?pool.currentMap+1:0;    
+    pool.currentMap = pool.currentMap+1<pool.idx.length?pool.currentMap+1:0;
     currentMapName = pool.baseURL+'/'+pool.maps[pool.idx[pool.currentMap]];
     loadMapByName(currentMapName);
 
@@ -110,7 +110,7 @@ function loadSubPool(poolURL, callback) {
 function next() {
     resolveNextMap();
 
-    
+
 }
 
 function shufflePool() {
@@ -166,7 +166,7 @@ COMMAND_REGISTRY.add("admin", ["!admin: if you're entitled to it, you get admin"
     return false;
 }, COMMAND.FOR_ALL);
 
-COMMAND_REGISTRY.add("addmap", ["!addmap #name: adds a map to the current pool"], (player, mapname ="")=> {   
+COMMAND_REGISTRY.add("addmap", ["!addmap #name: adds a map to the current pool"], (player, mapname ="")=> {
     if (mapname=="") {
         announce(`map name is empty, should be either on "https://webliero.gitlab.io/webliero-maps/pools/index.json" or a correct https link`, player.id, COLORS.ERROR)
         return false
@@ -181,12 +181,12 @@ COMMAND_REGISTRY.add("addmap", ["!addmap #name: adds a map to the current pool"]
         }
         addMap(mapname)
         announce(`map ${mapname} was added to the pool`, null, COLORS.ANNOUNCE_BRIGHT)
-        
+
     })();
     return false;
 },  COMMAND.SUPER_ADMIN_ONLY);
 
-COMMAND_REGISTRY.add("delmaplast", ["!delmap: removes last map from the current pool"], (player, idx =null)=> {   
+COMMAND_REGISTRY.add("delmaplast", ["!delmap: removes last map from the current pool"], (player, idx =null)=> {
     if (mypoolIdx.length==0) {
         return false
     }
@@ -195,8 +195,8 @@ COMMAND_REGISTRY.add("delmaplast", ["!delmap: removes last map from the current 
         return false
     }*/
     delMapLast()
-   // announce(`map ${idx} was removed from the pool`, null, COLORS.ANNOUNCE_BRIGHT)   
-    
+   // announce(`map ${idx} was removed from the pool`, null, COLORS.ANNOUNCE_BRIGHT)
+
     return false;
 },  COMMAND.SUPER_ADMIN_ONLY);
 
@@ -226,7 +226,7 @@ COMMAND_REGISTRY.add(["deladmin","da"], ["!deladmin #auth: removes an admin"], (
         let pid = parseInt(a.replace("#",""))
         let p = window.WLROOM.getPlayer(pid)
         if (p) {
-            a = auth.get(p.id)        
+            a = auth.get(p.id)
         }
     }
     if (!admins.get(a)) {
@@ -243,8 +243,8 @@ COMMAND_REGISTRY.add(["deladmin","da"], ["!deladmin #auth: removes an admin"], (
     } catch(error) {
         announce(`error removing ${a} from admin list`, player, COLORS.ERROR)
         console.log(`------- error removing admin ${a} : ${error}`)
-    }    
-    
+    }
+
     return false;
 },  COMMAND.SUPER_ADMIN_ONLY);
 

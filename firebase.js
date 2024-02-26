@@ -40,7 +40,7 @@ function initFirebase() {
 			'https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js',
 			'https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js',
 		]);
-		
+
 		firebase.initializeApp(CONFIG.firebase);
 		fdb = firebase.database();
 		commentsRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/comments`);
@@ -48,11 +48,11 @@ function initFirebase() {
         loginsRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/logins`);
 
         adminsRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/admins`);
-        
+
         settingsRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/settings`);
 
         listenForAdminsEvents();
-       
+
         listenForSettingsEvents();
 
         if (CONFIG.pool_from_database) {
@@ -62,7 +62,7 @@ function initFirebase() {
         }
 		console.log('firebase ok');
 
-	})();		
+	})();
 }
 
 
@@ -76,7 +76,7 @@ function loadnewAdmin(childSnapshot) {
 	var k = childSnapshot.key;
 
   loadAdmin(k,v);
-  
+
   console.log("admin `"+k+"`: `"+v.name+"` has been added to memory");
   notifyAdmins("admin `"+k+"`: `"+v.name+"` has been added to memory");
 }
@@ -101,13 +101,13 @@ function addAdmin(player) {
     adminsRef.child(a).set({name: player.name})
 }
 
-function removeAdmin(a) {    
+function removeAdmin(a) {
     let p = admins.get(a)
     let curr_pid = getPlayerIdFromAuth(a)
     if (curr_pid) {
         window.WLROOM.setPlayerAdmin(curr_pid, false)
     }
-    
+
     const name = p.name
     adminsRef.child(a).remove()
     admins.delete(a)
@@ -127,7 +127,7 @@ function loadnewMap(childSnapshot) {
 
     mypool[k] = v;
     shufflePool();
-	
+
 	console.log("map `"+v+"` has been added to the pool");
     notifyAdmins("map `"+v+"` has been added to the pool");
 }
@@ -146,7 +146,7 @@ function addMap(mapname) {
     poolRef.child(mypoolIdx.length).set(mapname)
 }
 
-function delMapLast() {        
+function delMapLast() {
     poolRef.child(mypoolIdx.length-1).remove()
 }
 
@@ -158,9 +158,9 @@ function listenForSettingsEvents() {
 function updateSettings(snapshot) {
     let v = snapshot.val();
     let sett = window.WLROOM.getSettings();
-    for(let s in v) {        
-        sett[s] = v[s];     
-    } 
+    for(let s in v) {
+        sett[s] = v[s];
+    }
     loadSettings(sett);
     window.settingsSnap = sett;
     console.log("settings loaded", JSON.stringify(sett));
@@ -182,7 +182,7 @@ COMMAND_REGISTRY.add("reset", ["!reset: resets to last settings loaded from data
 
 
 COMMAND_REGISTRY.add("poolreload", ["!poolreload: reloads the map pool from database from database"], (player) => {
-    poolRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/pool`);    
+    poolRef = fdb.ref(`${baseRoomName}/${CONFIG.room_id}/pool`);
     mypool = {};
     mypoolIdx = [];
     listenForPoolEvents();
