@@ -26,7 +26,7 @@ const chainFunction = (object, attribute, func) => {
 	var room = WLInit({
 		token: window.WLTOKEN,
 		roomName: CONFIG.room_name,
-		maxPlayers: CONFIG.max_players,	
+		maxPlayers: CONFIG.max_players,
 		public: CONFIG.public
 	});
 

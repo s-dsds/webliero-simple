@@ -32,41 +32,41 @@ var COMMAND_REGISTRY = (function () {
          object[attribute] = func
        }
      }
- 
+
      const log = (...arguments) => {
        console.log(...arguments.map(x => JSON.stringify(x)))
      }
- 
+
      let room = null
-     
+
      let settings = {
          motd: `Commands are available in this room, type !help for more informations`,
          motd_color: 0x00A9D0,
          error_color: 0xFF0000,
          help_color: 0x50A9D0,
      } //default settings
- 
+
      const loadSettings = (confArgs) => {
          settings = {
              ...settings,
              ...confArgs
          }
      }
- 
+
      let commands = {
          any:  new Map(),
          admins: new Map(),
          superadmins: new Map()
      }
- 
+
      const execMotd = (player) => {
          if (!settings.motd) {
              return
          }
          room.sendAnnouncement(settings.motd, player.id, settings.motd_color)
      }
- 
-     const onChat = (p, m) =>  {        
+
+     const onChat = (p, m) =>  {
          if (m[0] == "!") {
              let splitted=m.substr(1).split(' ')
              if (isSuperAdmin(p) && !execCommand(commands.superadmins, p, splitted)) {
@@ -79,10 +79,10 @@ var COMMAND_REGISTRY = (function () {
          }
          return true
      }
- 
-     const execCommand = (commandList, p, commandText) => {         
+
+     const execCommand = (commandList, p, commandText) => {
          const command = commandList.get(commandText[0])
-         if (command == null || typeof command.f != 'function') {             
+         if (command == null || typeof command.f != 'function') {
              return true
          } else {
              try {
@@ -95,7 +95,7 @@ var COMMAND_REGISTRY = (function () {
          }
          return true
      }
- 
+
      const add = (name, usage, func, admin = COMMAND.FOR_ALL) => {
          const clist = commands[resolveMap(admin)]
          if (typeof name == 'object') {
@@ -107,7 +107,7 @@ var COMMAND_REGISTRY = (function () {
          }
          clist.set(name, {h:usage, f:func})
      }
- 
+
      const remove = (name, admin) => {
          commands[resolveMap(admin)].delete(name)
          console.log('command '+name+' removed')
@@ -144,7 +144,7 @@ var COMMAND_REGISTRY = (function () {
                  }
                  msg.push('  for any players:')
              }
-             
+
              msg.push('    '+Array.from(commands.any.keys()).join(', '))
              msg.push('type "!help commandname" for help on a specific command')
              return msg
@@ -154,31 +154,31 @@ var COMMAND_REGISTRY = (function () {
                 m = m();
             }
             if (typeof m.reduce=="function") {
-                m.forEach(printMsg)        
+                m.forEach(printMsg)
             } else {
                room.sendAnnouncement(m, p.id, settings.help_color, "small")
             }
-            
+
         }
-         msg.forEach(printMsg)        
+         msg.forEach(printMsg)
      }
- 
-     const init = (argRoom, confArgs) => {        
+
+     const init = (argRoom, confArgs) => {
          if (window.CRPLUGIN) {
              log('command registry is already loaded, you can change settings use COMMAND_REGISTRY.loadSettings()', settings)
              return
          }
-         room=argRoom 
+         room=argRoom
          loadSettings(confArgs)
          log('loading command registry', settings)
          window.CRPLUGIN = true
- 
+
          add(["h","help"], ["!help or !h: lists all available commands", "can take anycommand name as arg for more help"], helpCommand)
- 
+
          chainFunction(room, 'onPlayerChat', onChat)
          chainFunction(room, 'onPlayerJoin', execMotd)
      }
- 
+
      return {
          init: init,
          loadSettings: loadSettings,
@@ -187,4 +187,3 @@ var COMMAND_REGISTRY = (function () {
          list: list
      }
    })()
-   

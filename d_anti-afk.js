@@ -14,13 +14,13 @@ var AFK_HANDLER = (function () {
       object[attribute] = func
     }
   }
-  
+
   const log = (...arguments) => {
     console.log(...arguments.map(x => JSON.stringify(x)))
   }
-  
+
   let room = null
-  
+
   let settings = {
     motd: null,
     motd_color: 0x00A9D0,
@@ -32,7 +32,7 @@ var AFK_HANDLER = (function () {
     maxPlayers: 0,
     enabled: true,
   } //default settings
-  
+
   const loadSettings = (confArgs) => {
     settings = {
       ...settings,
@@ -43,7 +43,7 @@ var AFK_HANDLER = (function () {
     } else {
         settings.motd = null
     }
-    
+
   }
   const execMotd = (player) => {
     if (!settings.motd) {
@@ -73,7 +73,7 @@ var AFK_HANDLER = (function () {
         room.sendAnnouncement(`Moving ${player.name} to spectators due to inactivity`, null, 0xDDDDDD)
         const reason = `You were afk for more than ${settings.timeout / 1000} seconds, moving you to spectators`
         room.sendAnnouncement(reason, playerId, 0xFF0000, "bold", 2);
-        kickCandidates[playerId] = new Date()        
+        kickCandidates[playerId] = new Date()
       }
     }, settings.graceTime)
   }
@@ -88,7 +88,7 @@ var AFK_HANDLER = (function () {
     clearPlayerTimeout(playerId)
     playingPlayers[playerId] = setTimeout(evictPlayer.bind(null, playerId), settings.timeout - settings.graceTime)
   }
-  
+
   const activate = (player) => {
     if (!hotPlayers[player.id]) {
       hotPlayers[player.id] = setTimeout(() => {
@@ -99,7 +99,7 @@ var AFK_HANDLER = (function () {
       }
     }
   }
-  
+
   const purgeInactiveSpectators = () => {
     if (!settings.kickAFKSpectatorWhenFull) {
       return;
@@ -120,7 +120,7 @@ var AFK_HANDLER = (function () {
       }
     }
   }
-  
+
   const removePlayer = (player) => {
     delete kickCandidates[player.id]
     clearPlayerTimeout(player.id)
@@ -143,16 +143,16 @@ var AFK_HANDLER = (function () {
      for (let player of window.WLROOM.getPlayerList()) {
         if (player.team != settings.spectatorTeam) {
             resetPlayerTimeout(player.id)
-        }        
+        }
      }
   }
-  const disable = () => {    
-    loadSettings({    
-        timeout: 0,    
-        graceTime: 0,        
+  const disable = () => {
+    loadSettings({
+        timeout: 0,
+        graceTime: 0,
         enabled: false,
     });
-    if (typeof announce =='function') announce(`afk detection was disabled`)   
+    if (typeof announce =='function') announce(`afk detection was disabled`)
   }
   const setTimeoutSeconds = (n) => {
     if (n==0) {
@@ -170,29 +170,29 @@ var AFK_HANDLER = (function () {
   const getSettings = () => {
      return settings
   }
-  const init = (argRoom, confArgs) => {        
+  const init = (argRoom, confArgs) => {
     if (window.AFKLUGIN) {
       log('afk plugin is already loaded, you can change settings use AFK_HANDLER.loadSettings()', settings)
       return
     }
-    room=argRoom 
-    
+    room=argRoom
+
     loadSettings(confArgs)
     log('loading afk plugin', settings)
     window.AFKLUGIN = true
-    
-    
-    chainFunction(room, 'onPlayerJoin', execMotd) 
+
+
+    chainFunction(room, 'onPlayerJoin', execMotd)
     chainFunction(room, 'onPlayerJoin', purgeInactiveSpectators)
-    chainFunction(room, 'onPlayerTeamChange', handleTeamChange)  
-    chainFunction(room, 'onGameStart', resetAllPlayersTimeouts) 
+    chainFunction(room, 'onPlayerTeamChange', handleTeamChange)
+    chainFunction(room, 'onGameStart', resetAllPlayersTimeouts)
 
     chainFunction(room, 'onPlayerActivity', activate)
     chainFunction(room, 'onPlayerChat', activate)
-    
+
     chainFunction(room, 'onPlayerLeave', removePlayer)
   }
-  
+
   return {
     init: init,
     loadSettings: loadSettings,

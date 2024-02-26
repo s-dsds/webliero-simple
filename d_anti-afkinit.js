@@ -5,7 +5,7 @@ COMMAND_REGISTRY.add("afk", ["!afk #seconds#: number of seconds allowed for afk,
     if (n == "" || isNaN(n)) {
         announce("you need to provide a number as argument, type `!help afk` for help", player, 0xFFF0000);
         return false;
-    }    
+    }
     AFK_HANDLER.setTimeoutSeconds(parseInt(n))
     return false;
 },  COMMAND.ADMIN_ONLY);

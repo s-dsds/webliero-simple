@@ -8,15 +8,15 @@ chainFunction(window.WLROOM, 'onPlayerJoin', (player) => {
 	writeLogins(player);
 
 	announce(CONFIG.motd, player, 0xFF2222, "bold");
-	
+
 	announce("please join us on discord if you're not there yet! "+CONFIG.discord_invite, player, 0xDD00DD, "italic");
-	if (player.auth){		
+	if (player.auth){
 		auth.set(player.id, player.auth);
 	}
 }
 )
 
-chainFunction(window.WLROOM, 'onPlayerLeave', function(player) {  
+chainFunction(window.WLROOM, 'onPlayerLeave', function(player) {
 	writeLogins(player, "logout");
 
 	auth.delete(player.id);

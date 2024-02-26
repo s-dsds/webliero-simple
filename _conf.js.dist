@@ -1,11 +1,11 @@
 const CONFIG = {
     discord_invite: "https://discord.gg/hW9UCgR",
     firebase: {
-        apiKey: "",	 
+        apiKey: "",
         databaseURL: "https://xxx.firebaseio.com",
         projectId: "xxx",
         storageBucket: "xxx.appspot.com",
-        }, 
+        },
     public: false,
     room_id: "one",
     room_name: "Small Pro Mode Room [24/7]",
